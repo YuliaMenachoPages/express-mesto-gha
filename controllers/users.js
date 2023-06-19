@@ -16,22 +16,15 @@ module.exports.getUserById = (req, res) => {
       res.send({data: user})
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({message: 'Переданы некорректные данные пользователя.'});
-      }
-      res.status(500).send({message: 'Ошибка по умолчанию'})
+            res.status(400).send({message: 'Переданы некорректные данные пользователя.'})
     });
 };
 
 module.exports.createUser = (req, res) => {
   const {name, about, avatar} = req.body;
-  const userId = req.params.userId;
   User.create({name, about, avatar})
     .then(user => {
-      if (!user) {
-        res.status(404).send({message: `Пользователь по указанному id: ${userId} не найден.`});
-      }
-      res.send({data: user})
+    res.send({data: user})
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -44,6 +37,7 @@ module.exports.createUser = (req, res) => {
 module.exports.updateUserInfo = (req, res) => {
   const {name, about} = req.body;
   const userId = req.user._id;
+  console.log(userId);
   User.findByIdAndUpdate(userId, {name, about}, {new: true, runValidators: true})
     .then(user => {
       if (!user) {

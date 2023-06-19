@@ -10,7 +10,6 @@ module.exports.getCards = (req, res) => {
 module.exports.createCard = (req, res) => {
   const owner = req.user._id;
   const {name, link} = req.body;
-
   Card.create({name, link, owner})
     .then(card => res.send({data: card}))
     .catch((err) => {
@@ -22,7 +21,8 @@ module.exports.createCard = (req, res) => {
     };
 
 module.exports.deleteCardById = (req, res) => {
-  Card.deleteOne(req.params)
+  const cardId = req.params._id;
+  Card.deleteOne(cardId)
     .then(card => {
       if (!card) {
         res.status(404).send({message: `Карточка с указанным _id не найдена.`});
@@ -39,7 +39,7 @@ module.exports.deleteCardById = (req, res) => {
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
-    req.params,
+    req.params._id,
     {$addToSet: {likes: req.user._id}},
     {new: true},
   )
@@ -59,7 +59,7 @@ module.exports.likeCard = (req, res) => {
 
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
-    req.params,
+    req.params._id,
     {$pull: {likes: req.user._id}},
     {new: true},
   )
