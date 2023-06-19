@@ -8,17 +8,21 @@ module.exports.getCards = (req, res) => {
 
 
 module.exports.createCard = (req, res) => {
-  console.log(req.user._id);
-  const {name, link, user} = req.body;
+  const owner = req.user._id;
+  const {name, link} = req.body;
 
-  Card.create({name, link, _id: user._id})
+  Card.create({name, link, owner})
     .then(card => res.send({data: card}))
-    .catch(err => res.status(500).send({message: 'Ошибка по умолчанию'}));
-};
-
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({message: Object.values(err.errors).map((error) => error.message).join(',')})
+      }
+        res.status(500).send({message: 'Ошибка по умолчанию'})
+      });
+    };
 
 module.exports.deleteCardById = (req, res) => {
-  Card.deleteOne(req.params._id)
+  Card.deleteOne(req.params)
     .then(card => {
       if (!card) {
         res.status(404).send({message: `Карточка с указанным _id не найдена.`});
@@ -35,7 +39,7 @@ module.exports.deleteCardById = (req, res) => {
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
-    req.params._id,
+    req.params,
     {$addToSet: {likes: req.user._id}},
     {new: true},
   )
@@ -55,7 +59,7 @@ module.exports.likeCard = (req, res) => {
 
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
-    req.params._id,
+    req.params,
     {$pull: {likes: req.user._id}},
     {new: true},
   )
