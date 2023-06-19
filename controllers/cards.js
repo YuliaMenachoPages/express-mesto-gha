@@ -21,11 +21,11 @@ module.exports.createCard = (req, res) => {
     };
 
 module.exports.deleteCardById = (req, res) => {
-  const cardId = req.params._id;
+  const cardId = req.params.cardId;
   Card.findByIdAndDelete(cardId)
     .then(card => {
       if (!card) {
-       return  res.status(404).send({message: `Карточка с указанным _id не найдена.`});
+       res.status(404).send({message: `Карточка с указанным _id не найдена.`});
       }
       res.send({data: card})
     })
@@ -38,15 +38,16 @@ module.exports.deleteCardById = (req, res) => {
 };
 
 module.exports.likeCard = (req, res) => {
-  const cardId = req.params._id;
+  const cardId = req.params.cardId;
+  const owner = req.user._id;
   Card.findByIdAndUpdate(
     cardId,
-    {$addToSet: {likes: req.user._id}},
+    {$addToSet: {likes: owner}},
     {new: true},
   )
     .then(card => {
       if (!card) {
-        return res.status(404).send({message: `Передан несуществующий _id карточки.`});
+        res.status(404).send({message: `Передан несуществующий _id карточки.`});
       }
       res.send({data: card})
     })
@@ -59,21 +60,22 @@ module.exports.likeCard = (req, res) => {
 };
 
 module.exports.dislikeCard = (req, res) => {
-  const cardId = req.params._id;
+  const cardId = req.params.cardId;
+  const owner = req.user._id;
   Card.findByIdAndUpdate(
     cardId,
-    {$pull: {likes: req.user._id}},
+    {$pull: {likes: owner}},
     {new: true},
   )
     .then(card => {
       if (!card) {
-        return res.status(404).send({message: `Передан несуществующий _id карточки.`});
+        res.status(404).send({message: `Передан несуществующий _id карточки.`});
       }
       res.send({data: card})
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({message: 'Переданы некорректные данные для снятия лайка. '});
+        return res.status(400).send({message: 'Переданы некорректные данные для снятия лайка.'});
       }
       res.status(500).send({message: 'Ошибка по умолчанию'})
     });
