@@ -21,8 +21,7 @@ module.exports.createCard = (req, res) => {
     };
 
 module.exports.deleteCardById = (req, res) => {
-  const cardId = req.params.cardId;
-  Card.findByIdAndDelete(cardId)
+  Card.findByIdAndDelete(req.params.cardId)
     .then(card => {
       if (!card) {
        res.status(404).send({message: `Карточка с указанным _id не найдена.`});
@@ -30,7 +29,7 @@ module.exports.deleteCardById = (req, res) => {
       res.send({data: card})
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(400).send({message: 'Переданы некорректные данные при создании карточки.'});
       }
       res.status(500).send({message: 'Ошибка по умолчанию'})
@@ -38,11 +37,9 @@ module.exports.deleteCardById = (req, res) => {
 };
 
 module.exports.likeCard = (req, res) => {
-  const cardId = req.params.cardId;
-  const owner = req.user._id;
   Card.findByIdAndUpdate(
-    cardId,
-    {$addToSet: {likes: owner}},
+    req.params.cardId,
+    {$addToSet: {likes: req.user._id}},
     {new: true},
   )
     .then(card => {
@@ -52,7 +49,7 @@ module.exports.likeCard = (req, res) => {
       res.send({data: card})
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(400).send({message: 'Переданы некорректные данные для постановки лайка.'});
       }
       res.status(500).send({message: 'Ошибка по умолчанию'})
@@ -60,11 +57,9 @@ module.exports.likeCard = (req, res) => {
 };
 
 module.exports.dislikeCard = (req, res) => {
-  const cardId = req.params.cardId;
-  const owner = req.user._id;
   Card.findByIdAndUpdate(
-    cardId,
-    {$pull: {likes: owner}},
+    req.params.cardId,
+    {$pull: {likes: req.user._id}},
     {new: true},
   )
     .then(card => {
@@ -74,7 +69,7 @@ module.exports.dislikeCard = (req, res) => {
       res.send({data: card})
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(400).send({message: 'Переданы некорректные данные для снятия лайка.'});
       }
       res.status(500).send({message: 'Ошибка по умолчанию'})

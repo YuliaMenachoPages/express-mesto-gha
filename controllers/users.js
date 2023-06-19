@@ -28,7 +28,7 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({message: 'Переданы некорректные данные при обновлении аватара.'});
+        return res.status(400).send({message: 'Переданы некорректные данные пользователя.'});
       }
       res.status(500).send({message: 'Ошибка по умолчанию'})
     });
