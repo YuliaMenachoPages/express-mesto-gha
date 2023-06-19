@@ -22,10 +22,10 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCardById = (req, res) => {
   const cardId = req.params._id;
-  Card.deleteOne(cardId)
+  Card.findByIdAndDelete(cardId)
     .then(card => {
       if (!card) {
-        res.status(404).send({message: `Карточка с указанным _id не найдена.`});
+       return  res.status(404).send({message: `Карточка с указанным _id не найдена.`});
       }
       res.send({data: card})
     })
@@ -38,14 +38,15 @@ module.exports.deleteCardById = (req, res) => {
 };
 
 module.exports.likeCard = (req, res) => {
+  const cardId = req.params._id;
   Card.findByIdAndUpdate(
-    req.params._id,
+    cardId,
     {$addToSet: {likes: req.user._id}},
     {new: true},
   )
     .then(card => {
       if (!card) {
-        res.status(404).send({message: `Передан несуществующий _id карточки.`});
+        return res.status(404).send({message: `Передан несуществующий _id карточки.`});
       }
       res.send({data: card})
     })
@@ -58,14 +59,15 @@ module.exports.likeCard = (req, res) => {
 };
 
 module.exports.dislikeCard = (req, res) => {
+  const cardId = req.params._id;
   Card.findByIdAndUpdate(
-    req.params._id,
+    cardId,
     {$pull: {likes: req.user._id}},
     {new: true},
   )
     .then(card => {
       if (!card) {
-        res.status(404).send({message: `Передан несуществующий _id карточки.`});
+        return res.status(404).send({message: `Передан несуществующий _id карточки.`});
       }
       res.send({data: card})
     })
