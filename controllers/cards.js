@@ -30,7 +30,7 @@ module.exports.deleteCardById = (req, res) => {
         res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
         return;
       }
-      if (err.name === 'CastError') {
+      else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
         return;
       }
@@ -53,7 +53,7 @@ module.exports.likeCard = (req, res) => {
         res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
         return;
       }
-      if (err.name === 'CastError') {
+     else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
         return;
       }
@@ -76,7 +76,7 @@ module.exports.dislikeCard = (req, res) => {
         res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
         return;
       }
-      if (err.name === 'CastError') {
+     else if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для снятия лайка.' });
         return;
       }
