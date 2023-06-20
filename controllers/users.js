@@ -9,15 +9,14 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
-    .orFail(new Error('NotValidId'))
     .then((user) => {
-      res.send({ data: user });
+      if (!user) {
+        res.status(404).send({ message: `Пользователь по указанному id: ${userId} не найден.` });
+      } else res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'NotValidId') {
-        res.status(404).send({ message: `Пользователь по указанному id: ${userId} не найден.` });
-        } else if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные при поиске пользователя.' });
         return;
       }
       res.status(500).send({ message: 'Ошибка по умолчанию' });
