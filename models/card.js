@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const cardSchema = new mongoose.Schema({
+const cardSchema = new mongoose.Schema(
+  {
   name: {
     type: String,
     required: [true, 'Поле "name" должно быть заполнено'],
@@ -33,7 +34,7 @@ const cardSchema = new mongoose.Schema({
     default: Date.now,
   },
 },
-{versionKey: false},
+{ versionKey: false },
 );
 
 module.exports = mongoose.model('card', cardSchema);
