@@ -1,14 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 
-
-const {PORT = 3000} = process.env;
+const { PORT = 3000 } = process.env;
 
 const app = express();
 
+app.use(helmet());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://127.0.0.1/mestodb', {
   useNewUrlParser: true,
@@ -16,7 +17,7 @@ mongoose.connect('mongodb://127.0.0.1/mestodb', {
 
 app.use((req, res, next) => {
   req.user = {
-    _id: "649023d7005a0e414f9376a5"
+    _id: '649023d7005a0e414f9376a5',
   };
   next();
 });
@@ -28,4 +29,4 @@ app.use('*', (req, res) => {
   res.status(404).json({ message: 'Страница не найдена' });
 });
 
-app.listen(PORT)
+app.listen(PORT);
