@@ -17,7 +17,7 @@ module.exports.getUserById = (req, res) => {
       if (err.name === 'NotValidId') {
         res.status(404).send({ message: `Пользователь по указанному id: ${userId} не найден.` });
         return;
-      } if (err.name === 'ValidationError') {
+      } if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
         return;
       }
