@@ -16,7 +16,8 @@ module.exports.getUserById = (req, res) => {
     .catch((err) => {
       if (err.name === 'NotValidId') {
         res.status(404).send({ message: `Пользователь по указанному id: ${userId} не найден.` });
-      } else if (err.name === 'CastError') {
+        return;
+      } if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя.' });
         return;
       }
@@ -49,7 +50,8 @@ module.exports.updateUserInfo = (req, res) => {
     .catch((err) => {
       if (err.name === 'NotValidId') {
         res.status(404).send({ message: `Пользователь по указанному id: ${userId} не найден.` });
-      } else if (err.name === 'CastError') {
+        return;
+      } if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данныепри обновлении профиля.' });
         return;
       }
@@ -68,7 +70,7 @@ module.exports.updateUserAvatar = (req, res) => {
     .catch((err) => {
       if (err.name === 'NotValidId') {
         res.status(404).send({ message: `Пользователь по указанному id: ${userId} не найден.` });
-      } else if (err.name === 'CastError') {
+      } else if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара.' });
         return;
       }
