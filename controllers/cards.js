@@ -12,7 +12,7 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link, owner })
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+            if (err.name === 'ValidationError') {
         return res.status(400).send({ message: Object.values(err.errors).map((error) => error.message).join(',') });
       }
       return res.status(500).send({ message: 'Ошибка по умолчанию' });
@@ -20,17 +20,24 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCardById = (req, res) => {
-  Card.findByIdAndDelete(req.params.cardId)
+  Card.findById(req.params.cardId)
+    .orFail(new Error('NotValidCardId'))
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
-        return;
+      if (card.owner.toString() !== req.user._id) {
+        return res.status(403).send({message: 'Недостаточно прав для удаления карточки.'})
       }
-      res.send({ data: card });
+      console.log(req.params.cardId);
+      console.log(card.owner.toString());
+      console.log(req.user._id);
+      Card.findByIdAndRemove(req.params.cardId)
+        .then(card => res.send(card))
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные при создании карточки.' });
+      if (err.message === 'NotValidCardId') {
+        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+        return;
+      }       if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки.' });
         return;
       }
       res.status(500).send({ message: 'Ошибка по умолчанию' });
