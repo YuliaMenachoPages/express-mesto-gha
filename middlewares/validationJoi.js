@@ -39,10 +39,17 @@ const cardValidation = celebrate({
   }),
 });
 
+const idValidation = celebrate({
+  body: Joi.object().keys({
+    userId: Joi.string().length(24).hex(),
+  }),
+});
+
 module.exports = {
   userValidation,
   loginValidation,
   userInfoValidation,
   userAvatarValidation,
   cardValidation,
+  idValidation,
 };

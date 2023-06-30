@@ -6,30 +6,21 @@ const handleAuthError = (res) => {
     .send({ message: 'Необходима авторизация' });
 };
 
-const extractBearerToken = (header) => {
-  return header.replace('Bearer ', '');
-};
-
+const extractBearerToken = (header) => header.replace('Bearer ', '');
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
-
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res
-      .status(401)
-      .send({ message: 'Необходима авторизация' });
+    return res.status(401).send({ message: 'Необходима авторизация' });
   }
-
   const token = extractBearerToken(authorization);
-
   let payload = {};
   try {
     payload = jwt.verify(token, 'magic-key');
   } catch (err) {
-    return handleAuthError(res)
+    handleAuthError(res);
   }
   req.user = payload;
 
   next();
 };
-
