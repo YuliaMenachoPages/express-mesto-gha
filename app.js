@@ -33,6 +33,6 @@ app.use('/cards', require('./routes/cards'));
 app.use('*', (req, res) => {
   res.status(404).json({ message: 'Страница не найдена' });
 });
-app.use(errors);
+app.use(errors());
 app.use(handleError);
 app.listen(PORT);
