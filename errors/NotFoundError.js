@@ -1,4 +1,4 @@
-class NotFoundDataError extends Error {
+class NotFoundError extends Error {
   constructor(message) {
     super(message);
     this.statusCode = 404;
@@ -6,5 +6,5 @@ class NotFoundDataError extends Error {
 }
 
 module.exports = {
-  NotFoundDataError,
+  NotFoundError,
 };

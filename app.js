@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
+const { NotFoundError } = require('./errors/NotFoundError');
 
 const auth = require('./middlewares/auth');
 const { handleError } = require('./middlewares/handleError');
@@ -30,8 +31,8 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Страница не найдена' });
+app.use('*', () => {
+  throw new NotFoundError('Страница не найдена');
 });
 app.use(errors());
 app.use(handleError);

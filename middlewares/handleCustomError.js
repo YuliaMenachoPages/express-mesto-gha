@@ -1,28 +1,27 @@
 const mongoose = require('mongoose');
 const { BadRequestError } = require('../errors/BadRequestError');
-const { ForbiddenAccessError } = require('../errors/ForbiddenAccessError');
-const { NotFoundDataError } = require('../errors/NotFoundDataError');
-const { UnauthorizedError } = require('../errors/UnauthorizedError');
-const { DuplicateKey } = require('../errors/DuplicateKey');
+const { NotFoundError } = require('../errors/NotFoundError');
+const { ConflictError } = require('../errors/ConflictError');
 
-const handleCustomError = (err, res, next) => {
+function handleCustomError(err, res, next) {
+  if (err instanceof mongoose.Error.ValidationError) {
+    next(new BadRequestError('Неправильно заполнены поля'));
+  }
+
+  if (err instanceof mongoose.Error.DocumentNotFoundError) {
+    next(new NotFoundError('Запрашиваемые данные не найдены'));
+  }
+
   if (err instanceof mongoose.Error.CastError) {
-    next(new BadRequestError('Передан некорректный Id'));
+    next(new BadRequestError('Передан некорректный id'));
   }
-  if (err instanceof mongoose.Error.UnauthorizedError) {
-    next(new UnauthorizedError('Пользователь не авторизован'));
+
+  if (err.code === 11000) {
+    next(new ConflictError('Пользователь с такими данными уже существует.'));
   }
-  if (err instanceof mongoose.Error.ForbiddenAccessError) {
-    next(new ForbiddenAccessError('Действие запрещено'));
-  }
-  if (err instanceof mongoose.Error.CastError) {
-    next(new NotFoundDataError('Указанный id не найден'));
-  }
-  if (err instanceof mongoose.Error.DuplicateKey) {
-    next(new DuplicateKey('Пользователь с указанными данными уже существует'));
-  }
+
   next(err);
-};
+}
 
 module.exports = {
   handleCustomError,

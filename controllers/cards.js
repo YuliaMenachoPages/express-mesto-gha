@@ -1,5 +1,6 @@
 const Card = require('../models/card');
-const handleCustomError = require('../middlewares/handleCustomError');
+const { handleCustomError } = require('../middlewares/handleCustomError');
+const { ForbiddenAccessError } = require('../errors/ForbiddenAccessError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -20,8 +21,7 @@ module.exports.deleteCardById = (req, res, next) => {
     .orFail(new Error('NotValidCardId'))
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        res.status(403).send({ message: 'Недостаточно прав для удаления карточки.' });
-        return;
+        throw new ForbiddenAccessError('Недостаточно прав для удаления карточки.');
       }
       Card.findByIdAndRemove(req.params.cardId)
         .then((deletedCard) => res.send(deletedCard))
