@@ -58,5 +58,5 @@ module.exports = {
   userAvatarValidation,
   cardValidation,
   userIdValidation,
-  cardIdValidation
+  cardIdValidation,
 };
