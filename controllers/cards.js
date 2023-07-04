@@ -4,7 +4,7 @@ const { ForbiddenAccessError } = require('../errors/ForbiddenAccessError');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((films) => res.send({ data: films }))
+    .then((cards) => res.send({ data: cards }))
     .catch((err) => handleCustomError(err, res, next));
 };
 
