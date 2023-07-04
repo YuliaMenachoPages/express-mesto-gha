@@ -18,7 +18,7 @@ module.exports.createCard = (req, res, next) => {
 
 module.exports.deleteCardById = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail(new Error('NotValidCardId'))
+    .orFail()
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         throw new ForbiddenAccessError('Недостаточно прав для удаления карточки.');
