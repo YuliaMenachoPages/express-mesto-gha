@@ -36,11 +36,8 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail()
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
-        return;
-      }
       res.send({ data: card });
     })
     .catch((err) => handleCustomError(err, res, next));
@@ -52,11 +49,8 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail()
     .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
-        return;
-      }
       res.send({ data: card });
     })
     .catch((err) => handleCustomError(err, res, next));
